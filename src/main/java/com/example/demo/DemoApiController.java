@@ -8,6 +8,6 @@ public class DemoApiController {
 
     @GetMapping("/demo")
     public BasicMessageResponseDto doDemoApiResponse() {
-        return new BasicMessageResponseDto("DEMO!");
+        return new BasicMessageResponseDto("DEMO UPDATED!");
     }
 }

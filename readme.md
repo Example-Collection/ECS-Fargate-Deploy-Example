@@ -117,7 +117,7 @@
 ![picture 1](images/load_balancer.png)
 
 - ELB를 생성하기에 앞서, 추후에 만들 ELB가 어떤 인스턴스에 대한 로드 밸런싱을 수행할지를 지정해주는  
-  **대상 그룹(Target Group)**을 생성해야 합니다. EC2 콘솔의 왼쪽 하단에 `대상 그룹`을 선택하여 이동합니다.  
+  **대상 그룹(Target Group)** 을 생성해야 합니다. EC2 콘솔의 왼쪽 하단에 `대상 그룹`을 선택하여 이동합니다.  
   설정한 정보는 아래와 같습니다.
 
 ![picture 2](images/target_group.png)
@@ -233,7 +233,10 @@
 
 ## Github Action으로 배포해보기
 
-- 여러 가지 CI/CD 툴 중에서, Github Action을 통해 배포를 해보겠습니다.
+- 여러 가지 CI/CD 툴 중에서, Github Action을 통해 배포를 해보겠습니다.  
+  이 배포 과정을 사용하면, 아래와 같은 파이프라인을 구축할 수 있게 됩니다.
+
+![picture 1](images/PIPELINE.png)
 
 - 여기서 만들어볼 CI/CD 파이프라인의 작동 순서는 아래와 같습니다.
 
@@ -320,6 +323,11 @@ jobs:
   - `AmazonS3FullAccess`
   - `AWSCodeDeployFullAccess`
 
+> 실무에서는 절대 Full Access 를 주면 안됩니다!!
+
+- 마지막으로 `codedeploy-deployment-group`에는 ECS 작업 정의할 때 만들어진 CodeDeploy 애플리케이션의  
+  **애플리케이션명이 아닌 배포 그룹명** 을 입력해 줍니다.(`DgpECS-~~-~~` 형식)
+
 ### task-definition.json
 
 - `task-definition.json` 파일은 작업 정의에 대한 설정값들을 담고 있는 파일입니다.  
@@ -368,5 +376,26 @@ Resources:
 ```
 
 - Github Action의 수행 과정에서 CodeDeploy가 있는데, CodeDeploy는 위 파일을 참조하여 배포 설정을 합니다.
+
+### 배포 결과 보기
+
+- 배포 과정은 CodeDeploy에서 확인할 수 있습니다.  
+  CodeDeploy 콘솔에 가서 우리가 방금 생성한 애플리케이션의 배포 과정을 볼 수 있습니다.  
+  배포가 성공적으로 끝난 후의 화면은 아래와 같습니다.
+
+![picture 13](images/CODEDEPLOY_RESULT.png)
+
+- 또한 아래 사진처럼 1시간을 대기하고 있는 모습을 볼 수 있습니다.
+
+![picture 14](images/CODEDEPLOY_WAITING.png)
+
+- 1시간을 대기하는 이유는 1시간 동안 새로운 코드를 배포하고, 만약 에러가 발생한다면 롤백하기 위함입니다.  
+  오른쪽 위의 `원래 작업 세트 종료`를 하면 모든 배포가 끝납니다.
+
+![picture 15](images/CODEDEPLOY_DONE.png)
+
+- 위 결과를 테스트해보기 위해서는 지금은 별도의 라우팅 설정이 되어 있지 않기 때문에 ALB의 주소로 요청을 보내보면 됩니다.
+
+![picture 16](images/API_RESULT.png)
 
 <hr/>
